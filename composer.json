@@ -9,6 +9,7 @@
         "eonx-com/easy-utils": "^3.3"
     },
     "require-dev": {
+        "dg/bypass-finals": "^1.2",
         "symplify/phpstan-extensions": "^8.3.41",
         "phpunit/phpunit": "^9.5",
         "symfony/symfony": "^5.2",
