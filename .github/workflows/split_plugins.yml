@@ -1,0 +1,76 @@
+name: 'Split Plugins'
+on:
+    push:
+        branches:
+            - master
+jobs:
+    provide_plugins_json:
+        runs-on: ubuntu-latest
+        steps:
+            -
+                uses: eonx-com/actions-checkout@v2
+            -
+                uses: eonx-com/actions-setup-php@v2
+                with:
+                    php-version: 7.4
+                    coverage: none
+            -
+                uses: eonx-com/actions-composer-install@v1
+            -
+                id: output_data
+                run: 'echo "::set-output name=matrix::$(bin/monorepo export-plugins)"'
+        outputs:
+            matrix: '${{ steps.output_data.outputs.matrix }}'
+    split_plugins:
+        needs: provide_plugins_json
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                mapping: '${{ fromJson(needs.provide_plugins_json.outputs.matrix) }}'
+                tag:
+                    - 0.1
+        name: 'Split ${{ matrix.mapping.dir }}'
+        env:
+            DIR: 'plugins/${{ matrix.mapping.dir }}'
+            TAG: '${{ matrix.tag }}'
+        steps:
+            -
+                uses: eonx-com/actions-checkout@v2
+            -
+                run: 'git fetch --prune --unshallow'
+            -
+                name: 'Remove Git Extra Header'
+                run: 'git config -l | grep ''http\..*\.extraheader'' | cut -d= -f1 | xargs -L1 git config --unset-all'
+            -
+                name: 'Resolve current branch'
+                id: branch_name
+                run: 'echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"'
+            -
+                name: 'Add Repo Remote'
+                run: 'git remote add split-remote https://natepage:${{ secrets.MONOREPO_GITHUB_TOKEN }}@github.com/eonx-com/${{ matrix.mapping.repo }}.git'
+            -
+                name: 'Split plugins/${{ matrix.mapping.dir }}'
+                env:
+                    BRANCH: '${{ steps.branch_name.outputs.branch }}'
+                run: |
+                    git checkout -b "local-$BRANCH-checkout" "$BRANCH"
+                    git subtree split --prefix="plugins/${{ matrix.mapping.dir }}" --branch="local-$BRANCH" "$BRANCH"
+                    git push --force split-remote local-$BRANCH:$BRANCH
+            -
+                if: 'contains(github.event.head_commit.message, ''[Release]'')'
+                name: 'Release eonx-com/${{ matrix.mapping.repo }}:${{ matrix.tag }}'
+                shell: bash
+                run: |
+                    if git rev-parse "$TAG" >/dev/null 2>&1; then
+                        git checkout -b "local-$TAG-checkout" "tags/$TAG"
+
+                        if [ -d "$DIR" ]; then
+                            git subtree split --prefix="$DIR" --branch="local-$TAG" "$TAG"
+                            git push --force split-remote local-$TAG:refs/tags/$TAG
+                        else
+                            echo "Dir \"$DIR\" does not exist for tag \"$TAG\""
+                        fi
+                    else
+                        echo "Tag \"$TAG\" does not exist, skip"
+                    fi

@@ -1,0 +1,19 @@
+includes:
+    - '.quality/vendor/symplify/phpstan-extensions/config/config.neon'
+
+services:
+    - class: EonX\PluginsMonorepo\PHPStan\SymfonyMessengerEnvelopeLastReturnType
+      tags: [phpstan.broker.dynamicMethodReturnTypeExtension]
+
+parameters:
+    paths:
+        - plugins
+
+    level: max
+
+    bootstrapFiles:
+        - %currentWorkingDirectory%/tests/bootstrap.php
+
+    excludes_analyse:
+        - plugins/*/var/*
+        - plugins/*/vendor/*

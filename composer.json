@@ -1,0 +1,72 @@
+{
+    "name": "eonx-com/sylius-plugins",
+    "type": "library",
+    "description": "Monorepo of EonX Sylius Plugins",
+    "license": "MIT",
+    "require": {
+        "php": "^7.4 || ^8.0",
+        "ext-json": "*",
+        "eonx-com/easy-utils": "^3.3"
+    },
+    "require-dev": {
+        "symplify/phpstan-extensions": "^8.3.41",
+        "phpunit/phpunit": "^9.5",
+        "symfony/symfony": "^5.2",
+        "symplify/monorepo-builder": "^8.3.41",
+        "symplify/changelog-linker": "^8.3.41",
+        "sensiolabs/security-checker": "^5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "EonX\\PluginsMonorepo\\": "monorepo",
+            "EonX\\PaymentsPlugin\\": "plugins/PaymentsPlugin/src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "EonX\\PaymentsPlugin\\Tests\\": "plugins/PaymentsPlugin/tests"
+        }
+    },
+    "replace": {
+        "eonx-com/payments-plugin": "self.version"
+    },
+    "scripts": {
+        "check-all": [
+            "@check-ecs",
+            "@check-phpstan",
+            "@check-security",
+            "@check-tests"
+        ],
+        "check-ecs": ".quality/vendor/bin/ecs check --ansi",
+        "check-monorepo": "vendor/bin/monorepo-builder validate --ansi",
+        "check-composer": "@composer validate --strict",
+        "check-phpstan": ".quality/vendor/bin/phpstan analyse --error-format symplify --ansi --memory-limit=1000M",
+        "check-security": "vendor/bin/security-checker security:check",
+        "check-tests": "vendor/bin/phpunit packages --coverage-text",
+        "check-rector": ".quality/vendor/bin/rector process --ansi --config rector-ci.php --dry-run",
+        "changelog": [
+            "vendor/bin/changelog-linker dump-merges --since-id 491 --ansi",
+            "vendor/bin/changelog-linker link --ansi",
+            "vendor/bin/changelog-linker cleanup --ansi"
+        ],
+        "fix-ecs": ".quality/vendor/bin/ecs check --fix --ansi",
+        "fix-rector": ".quality/vendor/bin/rector process --ansi --config rector-ci.php",
+        "merge": "vendor/bin/monorepo-builder merge --ansi",
+        "release": "vendor/bin/monorepo-builder release",
+        "propagate": "vendor/bin/monorepo-builder propagate --ansi",
+        "split": "vendor/bin/monorepo-builder split --ansi",
+        "post-install-cmd": [
+            "cd .quality && composer install --dev --no-interaction"
+        ]
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "process-timeout": 0
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    }
+}

@@ -1,0 +1,48 @@
+name: Split Tests
+
+on: [push, pull_request]
+
+jobs:
+    provide_plugins_json:
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: eonx-com/actions-checkout@v2
+
+            -   uses: eonx-com/actions-setup-php@v2
+                with:
+                    php-version: 7.4
+                    coverage: none
+
+            -   uses: eonx-com/actions-composer-install@v1
+
+            -   id: output_data
+                run: echo "::set-output name=matrix::$(bin/monorepo export-plugins)"
+
+        outputs:
+            matrix: ${{ steps.output_data.outputs.matrix }}
+
+    after_split_testing:
+        needs: provide_plugins_json
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                php: [ '7.4' ]
+                package: ${{ fromJson(needs.provide_plugins_json.outputs.matrix) }}
+
+        name: ${{ matrix.package.dir }}
+
+        steps:
+            -   uses: eonx-com/actions-checkout@v2
+
+            -   uses: eonx-com/actions-setup-php@v2
+                with:
+                    php-version: ${{ matrix.php }}
+                    coverage: none
+                    extensions: pdo_sqlite
+
+            -   uses: eonx-com/actions-composer-install@v1
+
+            -   run: vendor/bin/monorepo-builder localize-composer-paths --ansi
+            -   run: cd plugins/${{ matrix.package.dir }}; composer update --prefer-dist --no-progress --ansi
+            -   run: cd plugins/${{ matrix.package.dir }}; vendor/bin/phpunit tests
