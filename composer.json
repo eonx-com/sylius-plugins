@@ -6,7 +6,8 @@
     "require": {
         "php": "^7.4 || ^8.0",
         "ext-json": "*",
-        "eonx-com/easy-utils": "^3.3"
+        "eonx-com/easy-utils": "^3.3",
+        "sylius/sylius": "~1.8.0 || ~1.9.0 || ~1.10.0"
     },
     "require-dev": {
         "dg/bypass-finals": "^1.2",
