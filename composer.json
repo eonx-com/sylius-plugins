@@ -14,7 +14,8 @@
         "symfony/symfony": "^5.2",
         "symplify/monorepo-builder": "^8.3.41",
         "symplify/changelog-linker": "^8.3.41",
-        "sensiolabs/security-checker": "^6.0"
+        "sensiolabs/security-checker": "^6.0",
+        "squizlabs/php_codesniffer": "^3.6"
     },
     "autoload": {
         "psr-4": {
