@@ -34,6 +34,9 @@ return static function (ContainerConfigurator $containerConfigurator): void {
     $parameters->set(Option::DIRECTORIES_TO_REPOSITORIES, [
         'plugins/*' => 'git@github.com:eonx-com/*.git',
     ]);
+    $parameters->set(Option::PACKAGE_DIRECTORIES, [
+        'plugins',
+    ]);
 
     $services = $containerConfigurator->services();
     $services->defaults()
