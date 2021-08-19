@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EonX\PLuginsMonorepo\Console\Commands;
+namespace EonX\PluginsMonorepo\Console\Commands;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
