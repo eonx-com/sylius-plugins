@@ -11,17 +11,13 @@ jobs:
             matrix:
                 php: [ '7.4' ]
                 actions:
-                    - { name: ecs, coverage: none, run: composer check-ecs }
+                    # Until dependencies fixed
+                    # - { name: ecs, coverage: none, run: composer check-ecs }
+                    # - { name: rector, coverage: none, run: composer check-rector }
+
                     - { name: monorepo, coverage: none, run: composer check-monorepo }
                     - { name: composer, coverage: none, run: composer check-composer }
                     - { name: phpstan, coverage: none, run: composer check-phpstan }
-                    # - { name: rector, coverage: none, run: composer check-rector }
-
-                    # -   name: tests
-                    #     coverage: pcov
-                    #     run: |
-                    #         composer check-tests | tee coverage_output.txt
-                    #         packages/EasyTest/bin/easy-test check-coverage -c 70 coverage_output.txt
 
         name: ${{ matrix.actions.name}} (${{ matrix.php }})
 
@@ -32,7 +28,6 @@ jobs:
                 with:
                     php-version: ${{ matrix.php }}
                     coverage: ${{ matrix.actions.coverage }}
-                    extensions: pdo_sqlite
 
             -   uses: eonx-com/actions-composer-install@v1
 
