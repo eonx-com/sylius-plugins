@@ -4,15 +4,24 @@ declare(strict_types=1);
 
 namespace EonX\PaymentsPlugin\Tests;
 
-use Symfony\Component\HttpKernel\KernelInterface;
+use EonX\PaymentsPlugin\ConstantsInterface;
+use EonX\PaymentsPlugin\Form\Type\EonXPaymentsGatewayConfigurationType;
+use Payum\Core\Bridge\Symfony\Builder\GatewayFactoryBuilder;
 
 final class PaymentsPluginTest extends AbstractTestCase
 {
     public function testSanity(): void
     {
-        // Trigger kernel to boot
-        $kernel = $this->getKernel();
+        $container = $this->getContainer();
 
-        self::assertInstanceOf(KernelInterface::class, $kernel);
+        self::assertInstanceOf(
+            EonXPaymentsGatewayConfigurationType::class,
+            $container->get(EonXPaymentsGatewayConfigurationType::class)
+        );
+
+        self::assertInstanceOf(
+            GatewayFactoryBuilder::class,
+            $container->get(ConstantsInterface::SERVICE_GATEWAY_FACTORY_BUILDER)
+        );
     }
 }

@@ -7,6 +7,7 @@ namespace EonX\PaymentsPlugin\Tests;
 use EonX\PaymentsPlugin\Tests\Stubs\KernelStub;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 abstract class AbstractTestCase extends TestCase
@@ -34,5 +35,15 @@ abstract class AbstractTestCase extends TestCase
         $kernel->boot();
 
         return $this->kernel = $kernel;
+    }
+
+    protected function tearDown(): void
+    {
+        $filesystem = new Filesystem();
+        $var = __DIR__ . '/../var';
+
+        if ($filesystem->exists($var)) {
+            $filesystem->remove($var);
+        }
     }
 }
