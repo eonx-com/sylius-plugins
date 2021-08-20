@@ -27,6 +27,8 @@ abstract class AbstractAction implements ActionInterface
 
     /**
      * @param mixed $input
+     *
+     * @return \Payum\Core\Bridge\Spl\ArrayObject<mixed>
      */
     protected function ensureArrayObject($input): ArrayObject
     {

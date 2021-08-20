@@ -21,6 +21,9 @@ final class EonXPaymentsGatewayFactory extends GatewayFactory
      */
     public const FACTORY_TITLE = 'EonX Payments';
 
+    /**
+     * @param \Payum\Core\Bridge\Spl\ArrayObject<mixed> $config
+     */
     protected function populateConfig(ArrayObject $config): void
     {
         $config->defaults([
